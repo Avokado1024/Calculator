@@ -11,9 +11,9 @@ struct u
 
 bool op(vector <u>& v1, vector <u>& v2, u& item) {
 	double a, b, c;
-	a = v1.back().value; // Берётся верхнее число из вектора с числами
-	v1.pop_back(); // Удаляется верхнее число из вектора с числами
-	switch (v2.back().type) { // Проверяется тип верхнего оператора из вектора с операциями
+	a = v1.back().value; // Берётся последний число из вектора с числами
+	v1.pop_back(); // Удаляется последнее число из вектора с числами
+	switch (v2.back().type) { // Проверяется тип последнего оператора из вектора с операциями
 	case '+':
 		b = v1.back().value;
 		v1.pop_back();
@@ -57,7 +57,7 @@ bool op(vector <u>& v1, vector <u>& v2, u& item) {
 	case '/':
 		b = v1.back().value;
 		if (a == 0) {
-			cerr << "На 0 делить нельзя! " << endl;
+			cerr << "ERROR" << endl;
 			return false;
 		}
 		else {
