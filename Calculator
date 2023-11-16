@@ -1,0 +1,177 @@
+#include <iostream>
+#include <cmath>
+#include <vector>
+#include <sstream>
+using namespace std;
+struct u
+{
+	char type; // 0 для чисел, "+"  для операции сложения и т.д.
+	double value;
+};
+
+bool op(vector <u>& v1, vector <u>& v2, u& item) {
+	double a, b, c;
+	a = v1.back().value; // Берётся верхнее число из вектора с числами
+	v1.pop_back(); // Удаляется верхнее число из вектора с числами
+	switch (v2.back().type) { // Проверяется тип верхнего оператора из вектора с операциями
+	case '+':
+		b = v1.back().value;
+		v1.pop_back();
+		c = a + b;
+		item.type = '0';
+		item.value = c;
+		v1.push_back(item); // Результат операции кладется обратно в вектор с числами
+		v2.pop_back();
+		break;
+
+	case '-':
+		b = v1.back().value;
+		v1.pop_back();
+		c = b - a;
+		item.type = '0';
+		item.value = c;
+		v1.push_back(item);
+		v2.pop_back();
+		break;
+
+	case '^':
+		b = v1.back().value;
+		v1.pop_back();
+		c = pow(b, a);
+		item.type = '0';
+		item.value = c;
+		v1.push_back(item);
+		v2.pop_back();
+		break;
+
+	case '*':
+		b = v1.back().value;
+		v1.pop_back();
+		c = a * b;
+		item.type = '0';
+		item.value = c;
+		v1.push_back(item);
+		v2.pop_back();
+		break;
+
+	case '/':
+		b = v1.back().value;
+		if (a == 0) {
+			cerr << "На 0 делить нельзя! " << endl;
+			return false;
+		}
+		else {
+			v1.pop_back();
+			c = (b / a);
+			item.type = '0';
+			item.value = c;
+			v1.push_back(item);
+			v2.pop_back();
+			break;
+		}
+
+	default:
+		cerr << "\nОшибка!\n";
+		return false;
+		break;
+	}
+	return true;
+
+}
+
+int f(char ch) {
+	if (ch == '+' || ch == '-') {
+		return 1;
+	}
+	if (ch == '*' || ch == '/') {
+		return 2;
+	}
+	if (ch == '^') 
+	{ return 3; 
+	}
+	else return 0;
+}
+
+int main()
+{
+	setlocale(LC_ALL, "RU");
+	cout << "Введи выражение:";
+	char ch;
+	double value;
+	bool flag = 1;
+	vector<u> v1;
+	vector<u> v2;
+	u item;
+	while (1) {
+		ch = cin.peek();
+		if (ch == '\n')break; // Если конец строки достигнут, то выходим из цикла
+		if (ch == ' ') {
+			cin.ignore();
+			continue;
+		}
+		if ((ch >= '0' && ch <= '9') || (ch == '-' && flag == 1)) { // Если прочитано число 
+			cin >> value;
+			item.type = '0';
+			item.value = value;
+			v1.push_back(item);
+			flag = 0;
+			continue;
+		}
+		if (ch == '+' || ch == '-' && flag == 0 || ch == '*' || ch == '/' || ch == '^') { // Если одна из операций (+,-,/,*)
+			if (v2.size() == 0) {
+				item.type = ch;
+				item.value = 0;
+				v2.push_back(item); // Операция кладётся в вектор с операциями
+				cin.ignore();
+				continue;
+			}
+			if (v2.size() != 0 && f(ch) > f(v2.back().type)) {
+				item.type = ch;
+				item.value = 0;
+				v2.push_back(item); // Операция кладётся в вектор с операциями
+				cin.ignore();
+				continue;
+			}
+			if (v2.size() != 0 && f(ch) <= f(v2.back().type)) {
+				if (op(v1, v2, item) == false) { // Если ф-ция false, то прекращаем работу
+					system("pause");
+					return 0;
+				}
+				continue;
+			}
+		}
+		if (ch == '(') {
+			item.type = ch;
+			item.value = 0;
+			v2.push_back(item); // Операция кладётся в вектор с операциями
+			cin.ignore();
+			continue;
+		}
+		if (ch == ')') {
+			while (v2.back().type != '(') {
+				if (op(v1, v2, item) == false) { // Если ф-ция false, то прекращаем работу
+					system("pause");
+					return 0;
+				}
+				else continue; // Если всё ок, то выдаём ответ
+			}
+			v2.pop_back();
+			cin.ignore();
+			continue;
+		}
+		else {
+			cout << "Неверно введено выражение!\n";
+			system("pause");
+			return 0;
+		}
+	}
+	while (v2.size() != 0) {
+		if (op(v1, v2, item) == false) { // Если ф-ция false, то прекращаем работу
+			system("pause");
+			return 0;
+		}
+		else continue; // Если всё ок, то выдаём ответ
+	}
+	cout << "Ответ: " << v1.back().value << endl;
+	return 0;
+}
